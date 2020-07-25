@@ -92,7 +92,16 @@ float LinuxParser::MemoryUtilization() {
 }
 
 // TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() { 
+  string idleTime, suspendTime;
+  string line;
+  std::ifstream filestream(kProcDirectory + kUptimeFilename);
+  if(getline(filestream, line)){
+    std::istringstream linestream(line);
+    if(linestream >> suspendTime >> idleTime)
+      return float(stoi(suspendTime)) + float(stoi(idleTime));
+  }
+  return 0; }
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
@@ -141,7 +150,6 @@ int LinuxParser::RunningProcesses() {
     }
 
   }
-  
   return 0; }
 
 // TODO: Read and return the command associated with a process
