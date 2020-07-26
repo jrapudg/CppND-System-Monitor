@@ -8,6 +8,19 @@ using std::string;
 
 // TODO: Return the aggregate CPU utilization
 float Processor::Utilization() { 
-    vector<string> jiffies = LinuxParser::CpuUtilization();
-    return 0.0; 
+    long jiffies = LinuxParser::Jiffies();
+    long activeJiffies = LinuxParser::ActiveJiffies();
+
+    float jiffiesDiff = (float)(jiffies - prevJiffies_);
+    float activeJiffiesDiff = (float)(activeJiffies - prevActiveJiffies_);
+
+    prevJiffies_ = jiffies;
+    prevActiveJiffies_= activeJiffies;
+    
+    if (jiffiesDiff <= 0.001){
+      return 0.0f;
+    }
+    else{
+      return activeJiffiesDiff / jiffiesDiff;
+    }
 }

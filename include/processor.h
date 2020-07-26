@@ -10,7 +10,9 @@ class Processor {
   float Utilization();  // TODO: See src/processor.cpp
 
  private:
-    std::vector<std::string> prevJiffies = {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
+    long prevJiffies_ = LinuxParser::Jiffies();
+    //long prevIdle_ = LinuxParser::IdleJiffies();
+    long prevActiveJiffies_ = LinuxParser::ActiveJiffies();
 };
 
 #endif
