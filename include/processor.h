@@ -7,11 +7,10 @@
 
 class Processor {
  public:
-  float Utilization();  // TODO: See src/processor.cpp
+  float Utilization();
 
  private:
     long prevJiffies_ = LinuxParser::Jiffies();
-    //long prevIdle_ = LinuxParser::IdleJiffies();
     long prevActiveJiffies_ = LinuxParser::ActiveJiffies();
 };
 

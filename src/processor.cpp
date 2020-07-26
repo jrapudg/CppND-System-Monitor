@@ -6,21 +6,21 @@
 using std::vector;
 using std::string;
 
-// TODO: Return the aggregate CPU utilization
+// Return the aggregate CPU utilization
 float Processor::Utilization() { 
     long jiffies = LinuxParser::Jiffies();
     long activeJiffies = LinuxParser::ActiveJiffies();
-
+    //Calculate difference of previous and current jiffies and activeJiffies
     float jiffiesDiff = (float)(jiffies - prevJiffies_);
     float activeJiffiesDiff = (float)(activeJiffies - prevActiveJiffies_);
-
+    // Update prevJiffies and prevActiveJiffies
     prevJiffies_ = jiffies;
     prevActiveJiffies_= activeJiffies;
-    
-    if (jiffiesDiff <= 0.001){
-      return 0.0f;
+    // Avoid division by zero
+    if (jiffiesDiff > 0.001){
+      return activeJiffiesDiff / jiffiesDiff; // Calculate CPU Utilization percentage
     }
     else{
-      return activeJiffiesDiff / jiffiesDiff;
+      return 0.0f;
     }
 }
