@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
 #include "linux_parser.h"
+// #include <experimental/filesystem> 
+// namespace fs = std::experimental::filesystem;
 
 using std::stof;
 using std::stol;
@@ -47,7 +48,7 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// BONUS: Update this to use std::filesystem
+// Read and return pids 
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
   DIR* directory = opendir(kProcDirectory.c_str());
@@ -66,6 +67,22 @@ vector<int> LinuxParser::Pids() {
   closedir(directory);
   return pids;
 }
+
+// BONUS: Update to use std::filesystem
+/*
+vector<int> LinuxParser::Pids(){
+  vector<int> pids;
+  string path = kProcDirectory;
+  for (const auto & entry : fs::directory_iterator(path)){
+    string filename = entry.path();
+    if (std::all_of(filename.begin(), filename.end(), isdigit)) {
+        int pid = stoi(filename);
+        pids.push_back(pid);
+    }
+  }
+  return pids;
+}
+*/
 
 // Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() { 
