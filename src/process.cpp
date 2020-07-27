@@ -12,32 +12,44 @@ using std::to_string;
 using std::vector;
 
 // Constructor
-Process::Process(int pid) : pid_(pid) {}
+Process::Process(int pid) : pid_(pid) {
+  Process::command_ = LinuxParser::Command(Process::pid_);
+}
 
 // Return this process's ID
-int Process::Pid() { return Process::pid_; }
+int Process::Pid() const{ return Process::pid_; }
 
 // Return this process's CPU utilization
-float Process::CpuUtilization() { 
-    long pidTotalTime = LinuxParser::ActiveJiffies(Process::Pid());
-    long pidUpTime = LinuxParser::UpTime(Process::Pid());
+float Process::CpuUtilization() const{ 
+    long pidTotalTime = LinuxParser::ActiveJiffies(this->Pid());
+    long pidUpTime = LinuxParser::UpTime(this->Pid());
     float Hertz = sysconf(_SC_CLK_TCK); 
-    float cpuUsage = 100 * ((pidTotalTime/Hertz)/pidUpTime);
+    float cpuUsage = ((pidTotalTime/Hertz)/pidUpTime);
     return cpuUsage; 
 }
 
-// TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+// Return the command that generated this process
+string& Process::Command() { return Process::command_; }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+// Return this process's memory utilization
+string Process::Ram() { return LinuxParser::Ram(this->Pid()); }
 
 // Return the user (name) that generated this process
-string Process::User() { return LinuxParser::User(Process::Pid()); }
+string Process::User() { return LinuxParser::User(this->Pid()); }
 
 // Return the age of this process (in seconds)
-long int Process::UpTime() { return LinuxParser::UpTime(Process::Pid()); }
+long int Process::UpTime() { return LinuxParser::UpTime(this->Pid()); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+// Overload the "less than" comparison operator for Process objects
+bool Process::operator<(Process const& a) const { 
+    // Uncomment to make comparison with respect to ram
+    /*
+    long currentRam = stol(LinuxParser::Ram(this->pid_));
+    long otherRam = stol(LinuxParser::Ram(a.pid_));
+    return currentRam < otherRam;
+    */
+    // Comparison by Cpu usage
+    float currentCpuUsage = this->CpuUtilization();
+    float otherCpuUsage = a.CpuUtilization();
+    return currentCpuUsage < otherCpuUsage;
+}
