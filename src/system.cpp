@@ -17,7 +17,7 @@ using std::vector;
 // Return the system's CPU
 Processor& System::Cpu() { return this->cpu_; }
 
-// TODO: Return a container composed of the system's processes
+// Return a container composed of the system's processes
 vector<Process>& System::Processes() { 
     vector<Process> processes = {};
     vector<int> pids = LinuxParser::Pids();
@@ -25,6 +25,8 @@ vector<Process>& System::Processes() {
         Process process(pid);
         processes.push_back(process);
     }
+    std::sort(processes.begin(), processes.end());
+    std::reverse(processes.begin(), processes.end());
     this->processes_ = processes;
     return this->processes_; 
 }
