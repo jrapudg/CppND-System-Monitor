@@ -12,7 +12,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-// DONE: An example of how to read data from the filesystem
+// Read and return operating system
 string LinuxParser::OperatingSystem() {
   string line;
   string key, value;
@@ -34,7 +34,7 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-// DONE: An example of how to read data from the filesystem
+// Read and return kernel
 string LinuxParser::Kernel() {
   string os, kernel, version;
   string line;
@@ -202,13 +202,43 @@ int LinuxParser::RunningProcesses() {
   }
   return 0; }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid[[maybe_unused]]) { return string(); }
+// Read and return the command associated with a process
+string LinuxParser::Command(int pid) { 
+  string line;
+  std::ifstream filestream(kProcDirectory + to_string(pid) + kCmdlineFilename);
+  if (filestream.is_open()){
+    std::getline(filestream, line);
+    if (line == ""){
+      return string();
+    }
+    else{
+      return line;
+    }
+  }
+  return string(); 
+}
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid[[maybe_unused]]) { return string(); }
+// Read and return the memory used by a process
+string LinuxParser::Ram(int pid) { 
+  string key, value;
+  string line;
+  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatusFilename);
+  if (filestream.is_open()){
+    while(std::getline(filestream, line)){
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      while(linestream >> key >> value){
+        if(key == "VmSize"){
+          std::ostringstream ram;
+          ram.precision(2);
+          ram << std::fixed << stof(value)/1000;
+          return ram.str();
+        }
+      }
+    }
+  }
+  return string(); 
+}
 
 // Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) { 
