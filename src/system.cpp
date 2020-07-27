@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
+#include "linux_parser.h"
 #include "process.h"
 #include "processor.h"
 #include "system.h"
-#include "linux_parser.h"
 
 using std::set;
 using std::size_t;
@@ -18,17 +18,17 @@ using std::vector;
 Processor& System::Cpu() { return this->cpu_; }
 
 // Return a container composed of the system's processes
-vector<Process>& System::Processes() { 
-    vector<Process> processes = {};
-    vector<int> pids = LinuxParser::Pids();
-    for (int pid : pids){
-        Process process(pid);
-        processes.push_back(process);
-    }
-    std::sort(processes.begin(), processes.end());
-    std::reverse(processes.begin(), processes.end());
-    this->processes_ = processes;
-    return this->processes_; 
+vector<Process>& System::Processes() {
+  vector<Process> processes = {};
+  vector<int> pids = LinuxParser::Pids();
+  for (int pid : pids) {
+    Process process(pid);
+    processes.push_back(process);
+  }
+  std::sort(processes.begin(), processes.end());
+  std::reverse(processes.begin(), processes.end());
+  this->processes_ = processes;
+  return this->processes_;
 }
 
 // Return the system's kernel identifier (string)
