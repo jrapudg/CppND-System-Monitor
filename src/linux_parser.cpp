@@ -231,7 +231,7 @@ string LinuxParser::Command(int pid) {
     if (line == "") {
       return string();
     } else {
-      return line;
+      return line.substr(0, 80);
     }
   }
   return string();
