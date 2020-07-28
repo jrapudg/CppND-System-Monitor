@@ -268,7 +268,7 @@ string LinuxParser::Ram(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "VmSize") {
+        if (key == "VmData") {
           std::ostringstream ram;
           ram.precision(2);
           ram << std::fixed << stof(value) / 1000;
