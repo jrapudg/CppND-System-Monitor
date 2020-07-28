@@ -259,6 +259,8 @@ string LinuxParser::Command(int pid) {
 }
 
 // Read and return the memory used by a process
+// VmSize: Sum of all the virtual memory
+// VmData: Exact physical memory being used as a part of Physical RAM
 string LinuxParser::Ram(int pid) {
   string key, value;
   string line;
