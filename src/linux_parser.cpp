@@ -273,7 +273,7 @@ string LinuxParser::Ram(int pid) {
         if (key == "VmData") {
           std::ostringstream ram;
           ram.precision(2);
-          ram << std::fixed << stof(value) / 1000;
+          ram << std::fixed << stof(value) / 1024;
           return ram.str();
         }
       }
