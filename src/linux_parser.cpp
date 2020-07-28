@@ -100,9 +100,9 @@ float LinuxParser::MemoryUtilization() {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "MemTotal")
+        if (key == filterMemTotalString)
           MemTotal = float(stoi(value));
-        else if (key == "MemFree") {
+        else if (key == filterMemFreeString) {
           MemFree = float(stoi(value));
           filestream.close();
           break;
@@ -194,7 +194,7 @@ vector<string> LinuxParser::CpuUtilization() {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key) {
-        if (key == "cpu") {
+        if (key == filterCpu) {
           for (int i = kUser_; i < kGuestNice_; i++) {
             linestream >> value;
             states.emplace_back(value);
@@ -217,7 +217,7 @@ int LinuxParser::TotalProcesses() {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "processes") return stoi(value);
+        if (key == filterProcesses) return stoi(value);
       }
     }
     filestream.close();
@@ -234,7 +234,7 @@ int LinuxParser::RunningProcesses() {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "procs_running") return stoi(value);
+        if (key == filterRunningProcesses) return stoi(value);
       }
     }
     filestream.close();
@@ -270,7 +270,7 @@ string LinuxParser::Ram(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "VmData") {
+        if (key == filterProcMem) {
           std::ostringstream ram;
           ram.precision(2);
           ram << std::fixed << stof(value) / 1024;
@@ -293,7 +293,7 @@ string LinuxParser::Uid(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestrem(line);
       while (linestrem >> key >> value) {
-        if (key == "Uid") {
+        if (key == filterUID) {
           return value;
         }
       }
