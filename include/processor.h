@@ -7,7 +7,7 @@
 
 class Processor {
  public:
-  float Utilization();
+  double Utilization();
 
  private:
   long prevJiffies_ = LinuxParser::Jiffies();
