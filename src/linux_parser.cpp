@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 // Only uncomment line bellow when using std::filesystem funciton for pids
 // #include <experimental/filesystem>
 // namespace fs = std::experimental::filesystem;
@@ -120,7 +121,7 @@ long LinuxParser::UpTime() {
   string suspendTime;
   string line;
   std::ifstream filestream(kProcDirectory + kUptimeFilename);
-  if (filestream.is_open()){
+  if (filestream.is_open()) {
     if (getline(filestream, line)) {
       std::istringstream linestream(line);
       if (linestream >> suspendTime >> idleTime)
@@ -136,7 +137,12 @@ long LinuxParser::Jiffies() {
   vector<string> cpuData = CpuUtilization();
   long jiffies = 0;
   for (int i = kUser_; i <= kSteal_; i++) {
-    jiffies += stol(cpuData[i]);
+    try {
+      jiffies += stol(cpuData[i]);
+    } catch (const std::invalid_argument) {
+      std::cerr << "Invalid argument"
+                << "\n";
+    }
   }
   return jiffies;
 }
@@ -151,7 +157,7 @@ long LinuxParser::ActiveJiffies(int pid) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     while (linestream >> jiffy) {
-      jiffies.push_back(jiffy);
+      jiffies.emplace_back(jiffy);
     }
     if (jiffies.size() >= 21) {
       totalTime = stol(jiffies[13]) + stol(jiffies[14]) + stol(jiffies[15]) +
@@ -191,7 +197,7 @@ vector<string> LinuxParser::CpuUtilization() {
         if (key == "cpu") {
           for (int i = kUser_; i < kGuestNice_; i++) {
             linestream >> value;
-            states.push_back(value);
+            states.emplace_back(value);
           }
         }
       }
@@ -327,7 +333,7 @@ long LinuxParser::UpTime(int pid) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     while (linestream >> jiffy) {
-      jiffies.push_back(jiffy);
+      jiffies.emplace_back(jiffy);
     }
     if (jiffies.size() >= 21) {
       startTime = stol(jiffies[21]) / Hertz;
