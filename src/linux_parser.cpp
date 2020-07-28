@@ -28,12 +28,14 @@ string LinuxParser::OperatingSystem() {
       while (linestream >> key >> value) {
         if (key == "PRETTY_NAME") {
           std::replace(value.begin(), value.end(), '_', ' ');
+          filestream.close();
           return value;
         }
       }
     }
+    filestream.close();
   }
-  return value;
+  return string();
 }
 
 // Read and return kernel
@@ -45,6 +47,7 @@ string LinuxParser::Kernel() {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     linestream >> os >> version >> kernel;
+    filestream.close();
   }
   return kernel;
 }
@@ -100,10 +103,12 @@ float LinuxParser::MemoryUtilization() {
           MemTotal = float(stoi(value));
         else if (key == "MemFree") {
           MemFree = float(stoi(value));
+          filestream.close();
           break;
         }
       }
     }
+    filestream.close();
   }
   MemUsage = (MemTotal - MemFree) / MemTotal;
   return MemUsage;
@@ -114,10 +119,13 @@ long LinuxParser::UpTime() {
   string idleTime, suspendTime;
   string line;
   std::ifstream filestream(kProcDirectory + kUptimeFilename);
-  if (getline(filestream, line)) {
-    std::istringstream linestream(line);
-    if (linestream >> suspendTime >> idleTime)
-      return float(stoi(suspendTime)) + float(stoi(idleTime));
+  if (filestream.is_open()){
+    if (getline(filestream, line)) {
+      std::istringstream linestream(line);
+      if (linestream >> suspendTime >> idleTime)
+        return float(stoi(suspendTime)) + float(stoi(idleTime));
+    }
+    filestream.close();
   }
   return 0;
 }
@@ -149,6 +157,7 @@ long LinuxParser::ActiveJiffies(int pid) {
                   stol(jiffies[16]);
       return totalTime;
     }
+    filestream.close();
   }
   return 0.0l;
 }
@@ -186,6 +195,7 @@ vector<string> LinuxParser::CpuUtilization() {
         }
       }
     }
+    filestream.close();
   }
   return states;
 }
@@ -202,6 +212,7 @@ int LinuxParser::TotalProcesses() {
         if (key == "processes") return stoi(value);
       }
     }
+    filestream.close();
   }
   return 0;
 }
@@ -218,6 +229,7 @@ int LinuxParser::RunningProcesses() {
         if (key == "procs_running") return stoi(value);
       }
     }
+    filestream.close();
   }
   return 0;
 }
@@ -233,6 +245,7 @@ string LinuxParser::Command(int pid) {
     } else {
       return line.substr(0, 80);
     }
+    filestream.close();
   }
   return string();
 }
@@ -255,6 +268,7 @@ string LinuxParser::Ram(int pid) {
         }
       }
     }
+    filestream.close();
   }
   return string();
 }
@@ -274,6 +288,7 @@ string LinuxParser::Uid(int pid) {
         }
       }
     }
+    filestream.close();
   }
   return string();
 }
@@ -295,6 +310,7 @@ string LinuxParser::User(int pid) {
         }
       }
     }
+    filestream.close();
   }
   return string();
 }
@@ -316,6 +332,7 @@ long LinuxParser::UpTime(int pid) {
       startTime = stol(jiffies[21]) / Hertz;
       return LinuxParser::UpTime() - startTime;
     }
+    filestream.close();
   }
   return 0.0l;
 }
