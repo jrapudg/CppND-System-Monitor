@@ -199,6 +199,7 @@ vector<string> LinuxParser::CpuUtilization() {
             linestream >> value;
             states.emplace_back(value);
           }
+          break;
         }
       }
     }
